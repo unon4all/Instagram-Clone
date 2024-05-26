@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
+import com.example.instaclone.data.UiState
+import com.example.instaclone.main.CommonProgressSpinner
 
 
 @Composable
@@ -44,11 +47,12 @@ fun SignUpScreen(
     navController: NavController,
     vm: IgViewModel,
 ) {
-
     // State for each TextField
     val (usernameTextFieldValue, onUsernameChange) = rememberTextFieldState()
     val (emailTextFieldValue, onEmailChange) = rememberTextFieldState()
     val (passwordTextFieldValue, onPasswordChange) = rememberTextFieldState()
+
+    val uiState by vm.uiState.collectAsState()
 
     SignUpContent(
         modifier = modifier,
@@ -58,7 +62,8 @@ fun SignUpScreen(
         onEmailChange = onEmailChange,
         passwordTextFieldValue = passwordTextFieldValue,
         onPasswordChange = onPasswordChange,
-        vm = vm
+        vm = vm,
+        uiState = uiState
     )
 }
 
@@ -71,15 +76,15 @@ fun SignUpContent(
     emailTextFieldValue: TextFieldValue,
     onEmailChange: (TextFieldValue) -> Unit,
     passwordTextFieldValue: TextFieldValue,
-    onPasswordChange: (TextFieldValue) -> Unit
+    onPasswordChange: (TextFieldValue) -> Unit,
+    uiState: UiState
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = CenterHorizontally
+                .verticalScroll(rememberScrollState()), horizontalAlignment = CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ig_logo),
@@ -127,6 +132,10 @@ fun SignUpContent(
                 text = "Already have an account? Sign in",
                 spanStyle = SpanStyle(color = Color.White)
             ), modifier = Modifier.padding(8.dp), onClick = {})
+        }
+
+        if (uiState is UiState.Loading) {
+            CommonProgressSpinner()
         }
     }
 }

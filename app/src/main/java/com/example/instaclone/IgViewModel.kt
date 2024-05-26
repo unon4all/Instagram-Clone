@@ -31,7 +31,7 @@ class IgViewModel @Inject constructor(
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
 
     init {
-//        auth.signOut()
+        auth.signOut()
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
         }

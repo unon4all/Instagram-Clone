@@ -1,10 +1,20 @@
 package com.example.instaclone.main
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.data.UiState
 
@@ -34,5 +44,22 @@ fun NotificationMessage(vm: IgViewModel) {
         is UiState.Idle -> {
             Toast.makeText(context, "Idle", Toast.LENGTH_SHORT).show()
         }
+    }
+}
+
+@Preview
+@Composable
+fun CommonProgressSpinner() {
+    Row(
+        modifier = Modifier
+            .alpha(0.5f)
+            .background(color = Color.LightGray)
+            .fillMaxSize()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        )
     }
 }
