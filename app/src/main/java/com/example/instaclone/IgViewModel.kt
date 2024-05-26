@@ -25,10 +25,17 @@ class IgViewModel @Inject constructor(
     val uiState: StateFlow<UiState> get() = _uiState.asStateFlow()
 
     private val _userData = MutableStateFlow<UserData?>(null)
-    val userData: StateFlow<UserData?> get() = _userData.asStateFlow()
+    private val userData: StateFlow<UserData?> get() = _userData.asStateFlow()
 
     private val _popupNotification = MutableStateFlow<Event<String>?>(null)
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
+
+    init {
+//        auth.signOut()
+        auth.currentUser?.uid?.let { uid ->
+            getUserData(uid)
+        }
+    }
 
     fun onSignUp(username: String, email: String, password: String) {
         _uiState.value = UiState.Loading
@@ -42,9 +49,7 @@ class IgViewModel @Inject constructor(
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-//                                _uiState.value = UiState.Success("Account created successfully")
                                 createOrUpdateUserProfile(username = username)
-//                                _userData.value = UserData(username, email)
                             } else {
                                 handleException(task.exception, "Error creating account")
                             }
@@ -73,9 +78,9 @@ class IgViewModel @Inject constructor(
         )
 
 
-        uid?.let { uid ->
+        uid?.let { userId ->
             _uiState.value = UiState.Loading
-            db.collection("users").document(uid).get().addOnSuccessListener {
+            db.collection("users").document(userId).get().addOnSuccessListener {
                 if (it.exists()) {
                     it.reference.update(userData.toMap()).addOnSuccessListener {
                         this._userData.value = userData
@@ -84,13 +89,13 @@ class IgViewModel @Inject constructor(
                         handleException(exception)
                     }
                 } else {
-                    db.collection("users").document(uid).set(userData).addOnSuccessListener {
+                    db.collection("users").document(userId).set(userData).addOnSuccessListener {
                         this._userData.value = userData
                         _uiState.value = UiState.Success("Profile created successfully")
                     }.addOnFailureListener { exception ->
                         handleException(exception)
                     }
-                    getUserData(uid)
+                    getUserData(userId)
                 }
             }.addOnFailureListener {
                 handleException(it)
@@ -99,8 +104,13 @@ class IgViewModel @Inject constructor(
     }
 
     private fun getUserData(uid: String) {
-//        _uiState.value = UiState.Loading
-
+        _uiState.value = UiState.Loading
+        db.collection("users").document(uid).get().addOnSuccessListener {
+            val userData = it.toObject(UserData::class.java)
+            this._userData.value = userData
+        }.addOnFailureListener {
+            handleException(it)
+        }
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {
