@@ -44,7 +44,7 @@ fun InstaCloneApp(modifier: Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = DestinationScreen.Signup.route) {
         composable(DestinationScreen.Signup.route) {
-            SignUpScreen(navController, vm, modifier)
+            SignUpScreen(navController = navController, viewModel = vm, modifier = modifier)
         }
     }
 
