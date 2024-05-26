@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -73,5 +76,23 @@ fun navigateTo(navController: NavController, destination: DestinationScreen) {
             saveState = true
         }
         launchSingleTop = true
+    }
+}
+
+@Composable
+fun CheckedSignIn(vm: IgViewModel, navController: NavController) {
+    val alreadySignedIn = remember { mutableStateOf(false) }
+    val signInState = remember { mutableStateOf(vm.isUserSignedIn()) }
+
+    LaunchedEffect(signInState.value) {
+        if (signInState.value && !alreadySignedIn.value) {
+            alreadySignedIn.value = true
+            navController.navigate(DestinationScreen.Feed.route) {
+                popUpTo(navController.graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+            }
+        }
     }
 }

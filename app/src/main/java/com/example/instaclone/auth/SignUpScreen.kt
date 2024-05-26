@@ -40,6 +40,7 @@ import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
 import com.example.instaclone.data.UiState
+import com.example.instaclone.main.CheckedSignIn
 import com.example.instaclone.main.CommonProgressSpinner
 import com.example.instaclone.main.navigateTo
 
@@ -56,6 +57,8 @@ fun SignUpScreen(
     val (passwordTextFieldValue, onPasswordChange) = rememberTextFieldState()
 
     val uiState by vm.uiState.collectAsState()
+
+    CheckedSignIn(navController = navController, vm = vm)
 
     SignUpContent(
         modifier = modifier,

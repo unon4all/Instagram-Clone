@@ -31,7 +31,7 @@ class IgViewModel @Inject constructor(
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
 
     init {
-        auth.signOut()
+//        auth.signOut()
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
         }
@@ -148,5 +148,9 @@ class IgViewModel @Inject constructor(
         val message = if (customMessage.isNotEmpty()) "$customMessage: $error" else error
         _popupNotification.value = Event(message)
         _uiState.value = UiState.Error(message)
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.auth.LoginScreen
 import com.example.instaclone.auth.SignUpScreen
+import com.example.instaclone.main.FeedScreen
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.ui.theme.InstaCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { paddingValues ->
-                    InstaCloneApp(modifier = Modifier.padding(paddingValues))
+                    InstaCloneApp(paddingValues = paddingValues)
                 }
             }
         }
@@ -39,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun InstaCloneApp(modifier: Modifier = Modifier) {
+fun InstaCloneApp(paddingValues: PaddingValues) {
     val vm = hiltViewModel<IgViewModel>()
     val navController = rememberNavController()
 
@@ -47,11 +49,21 @@ fun InstaCloneApp(modifier: Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = DestinationScreen.Signup.route) {
         composable(DestinationScreen.Signup.route) {
-            SignUpScreen(navController = navController, vm = vm, modifier = modifier)
+            SignUpScreen(
+                navController = navController, vm = vm, modifier = Modifier.padding(paddingValues)
+            )
         }
 
         composable(DestinationScreen.Login.route) {
-            LoginScreen(navController = navController, vm = vm, modifier = modifier)
+            LoginScreen(
+                navController = navController, vm = vm, modifier = Modifier.padding(paddingValues)
+            )
+        }
+
+        composable(DestinationScreen.Feed.route) {
+            FeedScreen(
+                navController = navController, vm = vm, modifier = Modifier.padding(paddingValues)
+            )
         }
     }
 }
@@ -60,6 +72,5 @@ fun InstaCloneApp(modifier: Modifier = Modifier) {
 sealed class DestinationScreen(val route: String) {
     data object Signup : DestinationScreen("signup")
     data object Login : DestinationScreen("login")
-    data object Home : DestinationScreen("home")
-    data object Profile : DestinationScreen("profile")
+    data object Feed : DestinationScreen("feed")
 }
