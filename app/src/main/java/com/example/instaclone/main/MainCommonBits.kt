@@ -15,6 +15,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.data.UiState
 
@@ -61,5 +63,15 @@ fun CommonProgressSpinner() {
                 .fillMaxSize()
                 .wrapContentSize(Alignment.Center)
         )
+    }
+}
+
+
+fun navigateTo(navController: NavController, destination: DestinationScreen) {
+    navController.navigate(destination.route) {
+        popUpTo(navController.graph.startDestinationId) {
+            saveState = true
+        }
+        launchSingleTop = true
     }
 }

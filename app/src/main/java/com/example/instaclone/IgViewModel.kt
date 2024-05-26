@@ -38,6 +38,12 @@ class IgViewModel @Inject constructor(
     }
 
     fun onSignUp(username: String, email: String, password: String) {
+
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            handleException(customMessage = "Please fill all fields")
+            return
+        }
+
         _uiState.value = UiState.Loading
 
         db.collection("users").whereEqualTo("username", username).get()

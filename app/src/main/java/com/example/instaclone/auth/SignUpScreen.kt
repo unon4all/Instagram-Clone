@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -35,10 +36,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
 import com.example.instaclone.data.UiState
 import com.example.instaclone.main.CommonProgressSpinner
+import com.example.instaclone.main.navigateTo
 
 
 @Composable
@@ -63,6 +66,7 @@ fun SignUpScreen(
         passwordTextFieldValue = passwordTextFieldValue,
         onPasswordChange = onPasswordChange,
         vm = vm,
+        navController = navController,
         uiState = uiState
     )
 }
@@ -77,8 +81,12 @@ fun SignUpContent(
     onEmailChange: (TextFieldValue) -> Unit,
     passwordTextFieldValue: TextFieldValue,
     onPasswordChange: (TextFieldValue) -> Unit,
+    navController: NavController,
     uiState: UiState
 ) {
+
+    val focusManager = LocalFocusManager.current
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -119,6 +127,7 @@ fun SignUpContent(
             )
 
             Button(onClick = {
+                focusManager.clearFocus(force = true)
                 vm.onSignUp(
                     usernameTextFieldValue.text,
                     emailTextFieldValue.text,
@@ -131,7 +140,9 @@ fun SignUpContent(
             ClickableText(text = AnnotatedString(
                 text = "Already have an account? Sign in",
                 spanStyle = SpanStyle(color = Color.White)
-            ), modifier = Modifier.padding(8.dp), onClick = {})
+            ),
+                modifier = Modifier.padding(8.dp),
+                onClick = { navigateTo(navController, DestinationScreen.Login) })
         }
 
         if (uiState is UiState.Loading) {

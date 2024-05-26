@@ -13,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.instaclone.auth.LoginScreen
 import com.example.instaclone.auth.SignUpScreen
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.ui.theme.InstaCloneTheme
@@ -48,12 +49,17 @@ fun InstaCloneApp(modifier: Modifier = Modifier) {
         composable(DestinationScreen.Signup.route) {
             SignUpScreen(navController = navController, vm = vm, modifier = modifier)
         }
+
+        composable(DestinationScreen.Login.route) {
+            LoginScreen(navController = navController, vm = vm, modifier = modifier)
+        }
     }
 }
 
 
 sealed class DestinationScreen(val route: String) {
     data object Signup : DestinationScreen("signup")
+    data object Login : DestinationScreen("login")
     data object Home : DestinationScreen("home")
     data object Profile : DestinationScreen("profile")
 }
