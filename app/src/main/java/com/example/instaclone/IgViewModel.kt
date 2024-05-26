@@ -66,6 +66,29 @@ class IgViewModel @Inject constructor(
             }
     }
 
+
+    fun onLogin(email: String, password: String) {
+        if (email.isEmpty() || password.isEmpty()) {
+            handleException(customMessage = "Please fill all fields")
+            return
+        }
+
+        _uiState.value = UiState.Loading
+
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                auth.currentUser?.uid?.let { uid ->
+                    getUserData(uid)
+                    _uiState.value = UiState.Success(message = "Logged in successfully")
+                }
+            } else {
+                handleException(task.exception, "Error logging in")
+            }
+        }.addOnFailureListener {
+            handleException(it)
+        }
+    }
+
     private fun createOrUpdateUserProfile(
         name: String? = null,
         username: String? = null,

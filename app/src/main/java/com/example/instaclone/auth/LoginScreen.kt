@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +42,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, vm:
     val (emailTextFieldValue, onEmailChange) = rememberTextFieldState()
     val (passwordTextFieldValue, onPasswordChange) = rememberTextFieldState()
 
-    val uiState = vm.uiState.collectAsState()
+    val uiState by vm.uiState.collectAsState()
 
     SignInContent(
         modifier = modifier,
@@ -50,6 +51,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, vm:
         onEmailChange = onEmailChange,
         passwordTextFieldValue = passwordTextFieldValue,
         onPasswordChange = onPasswordChange,
+        vm = vm,
         uiState = uiState,
     )
 }
@@ -63,7 +65,8 @@ fun SignInContent(
     onEmailChange: (TextFieldValue) -> Unit,
     passwordTextFieldValue: TextFieldValue,
     onPasswordChange: (TextFieldValue) -> Unit,
-    uiState: Any,
+    vm: IgViewModel,
+    uiState: UiState,
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -107,6 +110,7 @@ fun SignInContent(
 
             Button(onClick = {
                 focusManager.clearFocus(force = true)
+                vm.onLogin(emailTextFieldValue.text, passwordTextFieldValue.text)
             }, modifier = Modifier.padding(16.dp)) {
                 Text(text = "LOGIN")
             }
