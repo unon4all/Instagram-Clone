@@ -42,8 +42,9 @@ class IgViewModel @Inject constructor(
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                _uiState.value = UiState.Success("Account created successfully")
-                                _userData.value = UserData(username, email)
+//                                _uiState.value = UiState.Success("Account created successfully")
+                                createOrUpdateUserProfile(username = username)
+//                                _userData.value = UserData(username, email)
                             } else {
                                 handleException(task.exception, "Error creating account")
                             }
@@ -52,6 +53,54 @@ class IgViewModel @Inject constructor(
             }.addOnFailureListener {
                 handleException(it)
             }
+    }
+
+    private fun createOrUpdateUserProfile(
+        name: String? = null,
+        username: String? = null,
+        bio: String? = null,
+        profileImage: String? = null
+    ) {
+        val uid = auth.currentUser?.uid
+
+        val userData = UserData(
+            userId = uid,
+            name = name ?: userData.value?.name,
+            userName = username ?: userData.value?.userName,
+            bio = bio ?: userData.value?.bio,
+            imgUrl = profileImage ?: userData.value?.imgUrl,
+            following = userData.value?.following,
+        )
+
+
+        uid?.let { uid ->
+            _uiState.value = UiState.Loading
+            db.collection("users").document(uid).get().addOnSuccessListener {
+                if (it.exists()) {
+                    it.reference.update(userData.toMap()).addOnSuccessListener {
+                        this._userData.value = userData
+                        _uiState.value = UiState.Success("Profile updated successfully")
+                    }.addOnFailureListener { exception ->
+                        handleException(exception)
+                    }
+                } else {
+                    db.collection("users").document(uid).set(userData).addOnSuccessListener {
+                        this._userData.value = userData
+                        _uiState.value = UiState.Success("Profile created successfully")
+                    }.addOnFailureListener { exception ->
+                        handleException(exception)
+                    }
+                    getUserData(uid)
+                }
+            }.addOnFailureListener {
+                handleException(it)
+            }
+        }
+    }
+
+    private fun getUserData(uid: String) {
+//        _uiState.value = UiState.Loading
+
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {

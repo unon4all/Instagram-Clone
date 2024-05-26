@@ -7,7 +7,7 @@ data class UserData(
     val imgUrl: String? = null,
     val bio: String? = null,
     val followers: Int? = null,
-    val following: List<String?> = listOf(),
+    val following: List<String>? = listOf(),
 ) {
 
     fun toMap() = mapOf(
