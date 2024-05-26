@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.auth.SignUpScreen
+import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.ui.theme.InstaCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,20 +42,12 @@ fun InstaCloneApp(modifier: Modifier = Modifier) {
     val vm = hiltViewModel<IgViewModel>()
     val navController = rememberNavController()
 
+    NotificationMessage(vm = vm)
+
     NavHost(navController = navController, startDestination = DestinationScreen.Signup.route) {
         composable(DestinationScreen.Signup.route) {
-            SignUpScreen(navController = navController, viewModel = vm, modifier = modifier)
+            SignUpScreen(navController = navController, vm = vm, modifier = modifier)
         }
-    }
-
-}
-
-
-@Preview
-@Composable
-fun InstaCloneAppPreview() {
-    InstaCloneTheme {
-        InstaCloneApp()
     }
 }
 

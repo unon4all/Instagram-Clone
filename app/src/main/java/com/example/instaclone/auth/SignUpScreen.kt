@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +42,7 @@ import com.example.instaclone.R
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: IgViewModel,
+    vm: IgViewModel,
 ) {
 
     // State for each TextField
@@ -58,13 +57,15 @@ fun SignUpScreen(
         emailTextFieldValue = emailTextFieldValue,
         onEmailChange = onEmailChange,
         passwordTextFieldValue = passwordTextFieldValue,
-        onPasswordChange = onPasswordChange
+        onPasswordChange = onPasswordChange,
+        vm = vm
     )
 }
 
 @Composable
 fun SignUpContent(
     modifier: Modifier,
+    vm: IgViewModel,
     usernameTextFieldValue: TextFieldValue,
     onUsernameChange: (TextFieldValue) -> Unit,
     emailTextFieldValue: TextFieldValue,
@@ -78,7 +79,7 @@ fun SignUpContent(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ig_logo),
@@ -112,7 +113,13 @@ fun SignUpContent(
                 value = passwordTextFieldValue, onValueChange = onPasswordChange
             )
 
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.padding(16.dp)) {
+            Button(onClick = {
+                vm.onSignUp(
+                    usernameTextFieldValue.text,
+                    emailTextFieldValue.text,
+                    passwordTextFieldValue.text
+                )
+            }, modifier = Modifier.padding(16.dp)) {
                 Text(text = "SIGN UP")
             }
 
