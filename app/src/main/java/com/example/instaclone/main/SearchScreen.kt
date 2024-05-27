@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun FeedScreen(modifier: Modifier = Modifier) {
+fun SearchScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -18,8 +18,7 @@ fun FeedScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Feed Screen")
+            Text(text = "Search Screen")
         }
     }
 }
-

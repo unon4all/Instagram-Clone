@@ -25,7 +25,7 @@ class IgViewModel @Inject constructor(
     val uiState: StateFlow<UiState> get() = _uiState.asStateFlow()
 
     private val _userData = MutableStateFlow<UserData?>(null)
-    private val userData: StateFlow<UserData?> get() = _userData.asStateFlow()
+    val userData: StateFlow<UserData?> get() = _userData.asStateFlow()
 
     private val _popupNotification = MutableStateFlow<Event<String>?>(null)
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
