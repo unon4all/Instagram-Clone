@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -96,7 +98,7 @@ fun CheckedSignIn(vm: IgViewModel, navController: NavController) {
     LaunchedEffect(signInState.value) {
         if (signInState.value && !alreadySignedIn.value) {
             alreadySignedIn.value = true
-            navController.navigate(DestinationScreen.Feed.route) {
+            navController.navigate(DestinationScreen.Home.route) {
                 popUpTo(navController.graph.startDestinationId) {
                     saveState = true
                 }
@@ -128,5 +130,17 @@ fun CommonImage(
         error = defaultPainter,
         fallback = defaultPainter,
         alignment = Alignment.Center
+    )
+}
+
+@Composable
+fun CommonDivider() {
+
+    HorizontalDivider(
+        color = Color.LightGray,
+        thickness = 1.dp,
+        modifier = Modifier
+            .alpha(0.3f)
+            .padding(top = 8.dp, bottom = 8.dp)
     )
 }

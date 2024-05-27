@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import com.example.instaclone.IgViewModel
 
 
@@ -32,7 +33,9 @@ data class BottomNavigationItemCompose(
 )
 
 @Composable
-fun BottomNavigationCompose(vm: IgViewModel, modifier: Modifier = Modifier) {
+fun BottomNavigationCompose(
+    vm: IgViewModel, modifier: Modifier = Modifier, navController: NavController
+) {
 
     val items = listOf(
         BottomNavigationItemCompose(
@@ -49,16 +52,22 @@ fun BottomNavigationCompose(vm: IgViewModel, modifier: Modifier = Modifier) {
         ),
     )
 
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    var selectedIndexDemo by rememberSaveable {
+        mutableIntStateOf(
+            navController.currentBackStackEntry?.arguments?.getString("selectedIndex")
+                ?.toIntOrNull() ?: 0
+        )
+    }
+
 
     Scaffold(bottomBar = {
         NavigationBar(modifier = modifier) {
             items.forEachIndexed { index, item ->
-                NavigationBarItem(selected = selectedIndex == index,
-                    onClick = { selectedIndex = index },
+                NavigationBarItem(selected = selectedIndexDemo == index,
+                    onClick = { selectedIndexDemo = index },
                     icon = {
                         Icon(
-                            imageVector = if (selectedIndex == index) item.selectedIcon else item.unselectedIcon,
+                            imageVector = if (selectedIndexDemo == index) item.selectedIcon else item.unselectedIcon,
                             contentDescription = null
                         )
                     })
@@ -70,10 +79,10 @@ fun BottomNavigationCompose(vm: IgViewModel, modifier: Modifier = Modifier) {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            when (selectedIndex) {
+            when (selectedIndexDemo) {
                 0 -> FeedScreen()
-                1 -> SearchScreen()
-                else -> MyPostScreen(vm = vm)
+                1 -> SearchScreen(navController = navController, vm = vm)
+                else -> MyPostScreen(vm = vm, navController = navController)
             }
         }
     }

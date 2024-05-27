@@ -153,4 +153,12 @@ class IgViewModel @Inject constructor(
     fun isUserSignedIn(): Boolean {
         return auth.currentUser != null
     }
+
+    fun logout() {
+        auth.signOut()
+    }
+
+    fun updateUserData(name: String?, username: String?, bio: String?) {
+            TODO("Not yet implemented")
+    }
 }

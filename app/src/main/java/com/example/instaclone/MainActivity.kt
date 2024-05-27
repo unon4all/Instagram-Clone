@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.auth.LoginScreen
+import com.example.instaclone.auth.ProfileScreen
 import com.example.instaclone.auth.SignUpScreen
 import com.example.instaclone.main.BottomNavigationCompose
 import com.example.instaclone.main.NotificationMessage
@@ -60,15 +61,26 @@ fun InstaCloneApp(paddingValues: PaddingValues) {
             )
         }
 
-        composable(DestinationScreen.Feed.route) {
-            BottomNavigationCompose(vm = vm, modifier = Modifier.padding(paddingValues))
+        composable(DestinationScreen.Home.route) {
+            BottomNavigationCompose(
+                vm = vm, modifier = Modifier.padding(paddingValues), navController = navController
+            )
+        }
+
+        composable(DestinationScreen.Profile.route) {
+            ProfileScreen(
+                vm = vm, modifier = Modifier.padding(paddingValues), navController = navController
+            )
         }
     }
 }
 
-
 sealed class DestinationScreen(val route: String) {
     data object Signup : DestinationScreen("signup")
     data object Login : DestinationScreen("login")
-    data object Feed : DestinationScreen("feed")
+    data object Home : DestinationScreen("home?selectedIndex={selectedIndex}") {
+        fun createRoute(selectedIndex: Int) = "home?selectedIndex=$selectedIndex"
+    }
+
+    data object Profile : DestinationScreen("profile")
 }

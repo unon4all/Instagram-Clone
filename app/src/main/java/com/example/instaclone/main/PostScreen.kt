@@ -26,11 +26,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
 
 @Composable
-fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
+fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: NavController) {
     val userData by vm.userData.collectAsState()
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -70,7 +72,9 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
             )
         }
         OutlinedButton(
-            onClick = { /* TODO */ },
+            onClick = {
+                navigateTo(navController = navController, destination = DestinationScreen.Profile)
+            },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
@@ -109,7 +113,7 @@ fun ProfileImage(imgUrl: String?, onClick: () -> Unit) {
                 .clip(CircleShape)
                 .size(32.dp)
                 .align(Alignment.BottomEnd),
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Blue)
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.LightGray)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_add), contentDescription = null
