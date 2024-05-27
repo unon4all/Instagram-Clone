@@ -31,7 +31,6 @@ class IgViewModel @Inject constructor(
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
 
     init {
-//        auth.signOut()
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
         }
@@ -108,7 +107,7 @@ class IgViewModel @Inject constructor(
 
 
         uid?.let { userId ->
-            _uiState.value = UiState.Loading
+//            _uiState.value = UiState.Loading
             db.collection("users").document(userId).get().addOnSuccessListener {
                 if (it.exists()) {
                     it.reference.update(userData.toMap()).addOnSuccessListener {
@@ -159,6 +158,8 @@ class IgViewModel @Inject constructor(
     }
 
     fun updateUserData(name: String?, username: String?, bio: String?) {
-            TODO("Not yet implemented")
+        createOrUpdateUserProfile(
+            name = name, username = username, bio = bio, profileImage = null
+        )
     }
 }

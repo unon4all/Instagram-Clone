@@ -28,37 +28,28 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
-import com.example.instaclone.data.UiState
 import com.example.instaclone.main.CommonDivider
-import com.example.instaclone.main.CommonProgressSpinner
 
 @Composable
 fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modifier) {
 
-    val uiState by vm.uiState.collectAsState()
+    val userData by vm.userData.collectAsState()
+    var name by rememberSaveable { mutableStateOf(userData?.name) }
+    var username by rememberSaveable { mutableStateOf(userData?.userName) }
+    var bio by rememberSaveable { mutableStateOf(userData?.bio) }
 
-    if (uiState != UiState.Loading) {
-        CommonProgressSpinner()
-    } else {
-
-        val userData by vm.userData.collectAsState()
-        var name by rememberSaveable { mutableStateOf(userData?.name) }
-        var username by rememberSaveable { mutableStateOf(userData?.userName) }
-        var bio by rememberSaveable { mutableStateOf(userData?.bio) }
-
-        ProfileContent(vm = vm,
-            name = name,
-            username = username,
-            bio = bio,
-            onNameChange = { name = it },
-            onUsernameChange = { username = it },
-            onBioChange = { bio = it },
-            onBack = {
-                navController.navigate(DestinationScreen.Home.createRoute(2))
-            },
-            onSave = { vm.updateUserData(name, username, bio) },
-            onLogout = { vm.logout() })
-    }
+    ProfileContent(vm = vm,
+        name = name,
+        username = username,
+        bio = bio,
+        onNameChange = { name = it },
+        onUsernameChange = { username = it },
+        onBioChange = { bio = it },
+        onBack = {
+            navController.navigate(DestinationScreen.Home.createRoute(2))
+        },
+        onSave = { vm.updateUserData(name, username, bio) },
+        onLogout = { vm.logout() })
 }
 
 
