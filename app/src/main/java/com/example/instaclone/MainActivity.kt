@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.auth.LoginScreen
 import com.example.instaclone.auth.SignUpScreen
-import com.example.instaclone.main.FeedScreen
+import com.example.instaclone.main.BottomNavigationCompose
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.ui.theme.InstaCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,9 +61,7 @@ fun InstaCloneApp(paddingValues: PaddingValues) {
         }
 
         composable(DestinationScreen.Feed.route) {
-            FeedScreen(
-                navController = navController, vm = vm, modifier = Modifier.padding(paddingValues)
-            )
+            BottomNavigationCompose(vm = vm, modifier = Modifier.padding(paddingValues))
         }
     }
 }
