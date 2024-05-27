@@ -35,6 +35,7 @@ import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.main.CommonDivider
 import com.example.instaclone.main.CommonImage
+import com.example.instaclone.main.navigateTo
 
 @Composable
 fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modifier) {
@@ -44,7 +45,8 @@ fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modif
     var username by rememberSaveable { mutableStateOf(userData?.userName) }
     var bio by rememberSaveable { mutableStateOf(userData?.bio) }
 
-    ProfileContent(vm = vm,
+    ProfileContent(
+        vm = vm,
         name = name,
         username = username,
         bio = bio,
@@ -55,7 +57,10 @@ fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modif
             navController.navigate(DestinationScreen.Home.createRoute(2))
         },
         onSave = { vm.updateUserData(name, username, bio) },
-        onLogout = { vm.logout() },
+        onLogout = {
+            vm.logout()
+            navigateTo(navController, DestinationScreen.Login)
+        },
         modifier = modifier
     )
 }
