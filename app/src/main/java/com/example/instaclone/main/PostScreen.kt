@@ -1,13 +1,18 @@
 package com.example.instaclone.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,11 +20,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.instaclone.IgViewModel
+import com.example.instaclone.R
 
 @Composable
 fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
@@ -28,7 +36,6 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
             ProfileImage(imgUrl = userData?.imgUrl, onClick = {})
-            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "15\nPosts",
                 textAlign = TextAlign.Center,
@@ -73,7 +80,7 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
             elevation = ButtonDefaults.buttonElevation(
                 defaultElevation = 0.dp, pressedElevation = 0.dp, disabledElevation = 0.dp
             ),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(32.dp)
         ) {
             Text(text = "Edit Profile", color = Color.Black)
         }
@@ -88,5 +95,25 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel) {
 
 @Composable
 fun ProfileImage(imgUrl: String?, onClick: () -> Unit) {
-
+    Box(
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        CommonImage(
+            url = imgUrl, modifier = Modifier
+                .padding(8.dp)
+                .size(80.dp)
+        )
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(32.dp)
+                .align(Alignment.BottomEnd),
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Blue)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_add), contentDescription = null
+            )
+        }
+    }
 }

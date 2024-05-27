@@ -2,9 +2,12 @@ package com.example.instaclone.main
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,12 +18,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
+import com.example.instaclone.R
 import com.example.instaclone.data.UiState
 
 
@@ -95,4 +104,29 @@ fun CheckedSignIn(vm: IgViewModel, navController: NavController) {
             }
         }
     }
+}
+
+
+@Composable
+fun CommonImage(
+    url: String?,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null,
+    contentScale: ContentScale = ContentScale.Crop
+) {
+    val defaultPainter = painterResource(id = R.drawable.ic_person)
+
+    AsyncImage(
+        model = url,
+        contentDescription = contentDescription,
+        modifier = modifier
+            .clip(CircleShape)
+            .size(64.dp)
+            .border(1.dp, Color.LightGray, CircleShape),
+        contentScale = contentScale,
+        placeholder = defaultPainter,
+        error = defaultPainter,
+        fallback = defaultPainter,
+        alignment = Alignment.Center
+    )
 }
