@@ -1,13 +1,18 @@
 package com.example.instaclone.auth
 
-import androidx.compose.foundation.background
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +34,7 @@ import androidx.navigation.NavController
 import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.main.CommonDivider
+import com.example.instaclone.main.CommonImage
 
 @Composable
 fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modifier) {
@@ -49,12 +55,15 @@ fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modif
             navController.navigate(DestinationScreen.Home.createRoute(2))
         },
         onSave = { vm.updateUserData(name, username, bio) },
-        onLogout = { vm.logout() })
+        onLogout = { vm.logout() },
+        modifier = modifier
+    )
 }
 
 
 @Composable
 fun ProfileContent(
+    modifier: Modifier = Modifier,
     vm: IgViewModel,
     name: String?,
     username: String?,
@@ -68,9 +77,10 @@ fun ProfileContent(
 ) {
 
     val scrollState = rememberScrollState()
+    val imageUrl = vm.userData.collectAsState().value?.imgUrl
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(8.dp),
@@ -92,15 +102,7 @@ fun ProfileContent(
 
         CommonDivider()
 
-        //User Image
-        Column(
-            Modifier
-                .height(200.dp)
-                .fillMaxWidth()
-                .background(Color.Gray)
-        ) {
-
-        }
+        ProfileImage(imageUrl = imageUrl, vm = vm)
 
         CommonDivider()
 
@@ -168,6 +170,34 @@ fun ProfileContent(
             TextButton(onClick = onLogout) {
                 Text("Logout")
             }
+        }
+    }
+}
+
+
+@Composable
+fun ProfileImage(imageUrl: String?, vm: IgViewModel) {
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = androidx.activity.result.contract.ActivityResultContracts.GetContent(),
+            onResult = { uri ->
+                uri?.let {
+                    vm.uploadProfileImage(it)
+                }
+            })
+
+    Box(modifier = Modifier.height(IntrinsicSize.Min)) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .clickable {
+                    launcher.launch("image/*")
+                }, horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CommonImage(url = imageUrl, modifier = Modifier.size(180.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Change Profile Picture")
         }
     }
 }

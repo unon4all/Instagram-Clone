@@ -1,5 +1,6 @@
 package com.example.instaclone
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.instaclone.data.Event
 import com.example.instaclone.data.UiState
@@ -11,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -161,5 +163,30 @@ class IgViewModel @Inject constructor(
         createOrUpdateUserProfile(
             name = name, username = username, bio = bio, profileImage = null
         )
+    }
+
+    private fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit) {
+        val storageRef = storage.reference
+        val uuid = UUID.randomUUID()
+        val imageRef = storageRef.child("images/$uuid")
+        val uploadTask = imageRef.putFile(uri)
+
+        uploadTask.addOnSuccessListener {
+
+            val result = it.metadata?.reference?.downloadUrl
+
+            result?.addOnSuccessListener { uri ->
+                onSuccess(uri)
+            }
+
+        }.addOnFailureListener { exception ->
+            handleException(exception)
+        }
+    }
+
+    fun uploadProfileImage(uri: Uri) {
+        uploadImage(uri) {
+            createOrUpdateUserProfile(profileImage = it.toString())
+        }
     }
 }
