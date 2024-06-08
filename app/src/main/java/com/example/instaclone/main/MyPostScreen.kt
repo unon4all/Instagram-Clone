@@ -1,5 +1,8 @@
 package com.example.instaclone.main
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,11 +36,24 @@ import com.example.instaclone.R
 
 @Composable
 fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: NavController) {
+
+    val newPostImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                val encoded = Uri.encode(it.toString())
+                val route = DestinationScreen.NewPost.createRoute(encoded)
+                navController.navigate(route)
+            }
+        })
+
     val userData by vm.userData.collectAsState()
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
-            ProfileImage(imgUrl = userData?.imgUrl, onClick = {})
+            ProfileImage(
+                imgUrl = userData?.imgUrl,
+                onClick = { newPostImageLauncher.launch("image/*") })
             Text(
                 text = "15\nPosts",
                 textAlign = TextAlign.Center,
@@ -73,7 +89,9 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
         }
         OutlinedButton(
             onClick = {
-                navigateTo(navController = navController, destination = DestinationScreen.Profile)
+                navigateTo(
+                    navController = navController, destination = DestinationScreen.Profile
+                )
             },
             modifier = Modifier
                 .padding(16.dp)

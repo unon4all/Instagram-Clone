@@ -18,6 +18,7 @@ import com.example.instaclone.auth.LoginScreen
 import com.example.instaclone.auth.ProfileScreen
 import com.example.instaclone.auth.SignUpScreen
 import com.example.instaclone.main.BottomNavigationCompose
+import com.example.instaclone.main.NewPostScreen
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.ui.theme.InstaCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,6 +73,18 @@ fun InstaCloneApp(paddingValues: PaddingValues) {
                 vm = vm, modifier = Modifier.padding(paddingValues), navController = navController
             )
         }
+
+        composable(DestinationScreen.NewPost.route) { navBackStackEntry ->
+            val imageUri = navBackStackEntry.arguments?.getString("imageUri")
+            imageUri?.let {
+                NewPostScreen(
+                    encodedUri = it,
+                    vm = vm,
+                    modifier = Modifier.padding(paddingValues),
+                    navController = navController
+                )
+            }
+        }
     }
 }
 
@@ -83,4 +96,7 @@ sealed class DestinationScreen(val route: String) {
     }
 
     data object Profile : DestinationScreen("profile")
+    data object NewPost : DestinationScreen("newpost/{imageUri}") {
+        fun createRoute(imageUri: String) = "newpost/$imageUri"
+    }
 }
