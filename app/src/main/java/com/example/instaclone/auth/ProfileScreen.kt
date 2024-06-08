@@ -1,6 +1,7 @@
 package com.example.instaclone.auth
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -28,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -45,8 +48,7 @@ fun ProfileScreen(navController: NavController, vm: IgViewModel, modifier: Modif
     var username by rememberSaveable { mutableStateOf(userData?.userName) }
     var bio by rememberSaveable { mutableStateOf(userData?.bio) }
 
-    ProfileContent(
-        vm = vm,
+    ProfileContent(vm = vm,
         name = name,
         username = username,
         bio = bio,
@@ -200,7 +202,13 @@ fun ProfileImage(imageUrl: String?, vm: IgViewModel) {
                     launcher.launch("image/*")
                 }, horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CommonImage(url = imageUrl, modifier = Modifier.size(180.dp))
+            CommonImage(
+                url = imageUrl,
+                modifier = Modifier
+                    .size(180.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color.LightGray, CircleShape),
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Change Profile Picture")
         }

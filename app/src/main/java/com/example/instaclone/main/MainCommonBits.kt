@@ -2,13 +2,10 @@ package com.example.instaclone.main
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -20,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -111,8 +107,8 @@ fun CheckedSignIn(vm: IgViewModel, navController: NavController) {
 
 @Composable
 fun CommonImage(
-    url: String?,
     modifier: Modifier = Modifier,
+    url: String?,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop
 ) {
@@ -121,10 +117,7 @@ fun CommonImage(
     AsyncImage(
         model = url,
         contentDescription = contentDescription,
-        modifier = modifier
-            .clip(CircleShape)
-            .size(64.dp)
-            .border(1.dp, Color.LightGray, CircleShape),
+        modifier = modifier,
         contentScale = contentScale,
         placeholder = defaultPainter,
         error = defaultPainter,
