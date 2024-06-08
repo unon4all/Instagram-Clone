@@ -8,6 +8,7 @@ import com.example.instaclone.data.UiState
 import com.example.instaclone.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,12 @@ class IgViewModel @Inject constructor(
 
     private val _popupNotification = MutableStateFlow<Event<String>?>(null)
     val popupNotification: StateFlow<Event<String>?> get() = _popupNotification.asStateFlow()
+
+    private val _refreshPostsProgress = MutableStateFlow(false)
+    val refreshPostsProgress: StateFlow<Boolean> get() = _refreshPostsProgress.asStateFlow()
+
+    private val _posts = MutableStateFlow<List<PostData>>(emptyList())
+    val posts: StateFlow<List<PostData>> get() = _posts.asStateFlow()
 
     init {
         auth.currentUser?.uid?.let { uid ->
@@ -139,6 +146,8 @@ class IgViewModel @Inject constructor(
         db.collection("users").document(uid).get().addOnSuccessListener {
             val userData = it.toObject(UserData::class.java)
             this._userData.value = userData
+            _uiState.value = UiState.Success("User data fetched successfully")
+            refreshPosts()
         }.addOnFailureListener {
             handleException(it)
         }
@@ -214,6 +223,7 @@ class IgViewModel @Inject constructor(
             db.collection("posts").document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
                 onPostSuccess()
+                refreshPosts()
             }.addOnFailureListener {
                 handleException(it, "Error creating post")
             }
@@ -221,5 +231,37 @@ class IgViewModel @Inject constructor(
             handleException(customMessage = "User not found.Create your Account")
             logout()
         }
+    }
+
+    private fun refreshPosts() {
+        val currentUserId = auth.currentUser?.uid
+
+        if (currentUserId != null) {
+            _refreshPostsProgress.value = true
+            db.collection("posts").whereEqualTo("userId", currentUserId).get()
+                .addOnCompleteListener { documents ->
+                    convertPosts(
+                        documents.result, _posts
+                    )
+                    _refreshPostsProgress.value = false
+                }.addOnFailureListener {
+                    handleException(it, "Error fetching posts")
+                    _refreshPostsProgress.value = false
+                }
+        } else {
+            handleException(customMessage = "User not found.Create your Account")
+            logout()
+        }
+    }
+
+    private fun convertPosts(documents: QuerySnapshot, outState: MutableStateFlow<List<PostData>>) {
+        val newPosts = mutableListOf<PostData>()
+        documents.forEach { document ->
+            val post = document.toObject(PostData::class.java)
+            newPosts.add(post)
+        }
+
+        val sortedPost = newPosts.sortedByDescending { it.postTime }
+        outState.value = sortedPost
     }
 }
