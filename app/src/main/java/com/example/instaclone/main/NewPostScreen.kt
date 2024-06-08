@@ -1,5 +1,6 @@
 package com.example.instaclone.main
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,9 +60,10 @@ fun NewPostScreen(
                 focusManager.clearFocus()
 
                 //call the vm function to post the image
+                vm.onNewPost(description = description,
+                    uri = Uri.parse(imageUri),
+                    onPostSuccess = { navController.popBackStack() })
             }
-
-
         }
 
         CommonDivider()

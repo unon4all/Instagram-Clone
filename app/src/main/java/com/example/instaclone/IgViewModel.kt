@@ -3,6 +3,7 @@ package com.example.instaclone
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.instaclone.data.Event
+import com.example.instaclone.data.PostData
 import com.example.instaclone.data.UiState
 import com.example.instaclone.data.UserData
 import com.google.firebase.auth.FirebaseAuth
@@ -187,6 +188,38 @@ class IgViewModel @Inject constructor(
     fun uploadProfileImage(uri: Uri) {
         uploadImage(uri) {
             createOrUpdateUserProfile(profileImage = it.toString())
+        }
+    }
+
+    fun onNewPost(uri: Uri, description: String, onPostSuccess: () -> Unit) {
+        uploadImage(uri) {
+            onCreatePost(it, description, onPostSuccess)
+        }
+    }
+
+    private fun onCreatePost(it: Uri, description: String, onPostSuccess: () -> Unit) {
+        val uid = auth.currentUser?.uid
+
+        if (uid != null) {
+            val postId = UUID.randomUUID().toString()
+            val post = PostData(
+                postId = postId,
+                userId = uid,
+                userName = userData.value?.userName,
+                userImage = userData.value?.imgUrl,
+                postImage = it.toString(),
+                postDescription = description,
+                postTime = System.currentTimeMillis()
+            )
+            db.collection("posts").document(postId).set(post).addOnSuccessListener {
+                _uiState.value = UiState.Success("Post created successfully")
+                onPostSuccess()
+            }.addOnFailureListener {
+                handleException(it, "Error creating post")
+            }
+        } else {
+            handleException(customMessage = "User not found.Create your Account")
+            logout()
         }
     }
 }
