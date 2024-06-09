@@ -109,7 +109,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
-
+    implementation( libs.gson)
 
     implementation(libs.coil.compose)
 

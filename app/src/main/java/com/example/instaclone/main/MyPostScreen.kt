@@ -1,6 +1,7 @@
 package com.example.instaclone.main
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -41,6 +42,7 @@ import com.example.instaclone.DestinationScreen
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
 import com.example.instaclone.data.PostData
+import com.google.gson.Gson
 
 @Composable
 fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: NavController) {
@@ -123,14 +125,18 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
         )
         PostList(
             postList = postData,
-            onPostClick = { postData ->
-                navController.navigate(DestinationScreen.SinglePost.createRoute(postData = postData))
+            onPostClick = { post ->
+                val postDataJson = Uri.encode(Gson().toJson(post))
+                navController.navigate("singlepost/$postDataJson")
             },
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxSize()
         )
+
+
+        Log.d("MyPostScreen", "postData: $postData")
     }
 }
 

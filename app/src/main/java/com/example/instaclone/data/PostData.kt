@@ -1,9 +1,10 @@
 package com.example.instaclone.data
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 
-@Serializable
+@Parcelize
 data class PostData(
     val postId: String? = null,
     val userId: String? = null,
@@ -11,5 +12,7 @@ data class PostData(
     val userImage: String? = null,
     val postImage: String? = null,
     val postDescription: String? = null,
-    val postTime: Long? = null
-)
+    val postTime: Long? = null,
+    val postLikes: List<String>? = null,
+    val postComments: List<String>? = null
+) : Parcelable

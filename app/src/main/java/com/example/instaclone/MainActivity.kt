@@ -26,6 +26,7 @@ import com.example.instaclone.main.NewPostScreen
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.main.SinglePostScreen
 import com.example.instaclone.ui.theme.InstaCloneTheme
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -93,43 +94,20 @@ fun InstaCloneApp(paddingValues: PaddingValues) {
 
         composable(
             route = DestinationScreen.SinglePost.route,
-            arguments = listOf(navArgument("postId") { type = NavType.StringType },
-                navArgument("userId") { type = NavType.StringType },
-                navArgument("userName") { type = NavType.StringType },
-                navArgument("userImage") { type = NavType.StringType },
-                navArgument("postImage") { type = NavType.StringType },
-                navArgument("postDescription") { type = NavType.StringType },
-                navArgument("postTime") { type = NavType.LongType })
+            arguments = listOf(navArgument("postData") { type = NavType.StringType })
         ) { navBackStackEntry ->
-            val postId = Uri.decode(navBackStackEntry.arguments?.getString("postId"))
-            val userId = Uri.decode(navBackStackEntry.arguments?.getString("userId"))
-            val userName = Uri.decode(navBackStackEntry.arguments?.getString("userName"))
-            val userImage = Uri.decode(navBackStackEntry.arguments?.getString("userImage"))
-            val postImage = Uri.decode(navBackStackEntry.arguments?.getString("postImage"))
-            val postDescription =
-                Uri.decode(navBackStackEntry.arguments?.getString("postDescription"))
-            val postTime = navBackStackEntry.arguments?.getLong("postTime")
+            val postDataJson = navBackStackEntry.arguments?.getString("postData")
+            val postData = Gson().fromJson(postDataJson, PostData::class.java)
 
-            val postData = PostData(
-                postId = postId,
-                userId = userId,
-                userName = userName,
-                userImage = userImage,
-                postImage = postImage,
-                postDescription = postDescription,
-                postTime = postTime
-            )
-
-            SinglePostScreen(
-                vm = vm,
-                modifier = Modifier.padding(paddingValues),
-                navController = navController,
-                postData = postData
-            )
+            postData?.let {
+                SinglePostScreen(
+                    vm = vm, modifier = Modifier, navController = navController, postData = it
+                )
+            }
         }
-
     }
 }
+
 
 sealed class DestinationScreen(val route: String) {
     data object Signup : DestinationScreen("signup")
@@ -140,18 +118,12 @@ sealed class DestinationScreen(val route: String) {
 
     data object Profile : DestinationScreen("profile")
     data object NewPost : DestinationScreen("newpost/{imageUri}") {
-        fun createRoute(imageUri: String) = "newpost/$imageUri"
+        fun createRoute(imageUri: String) = "newpost/${Uri.encode(imageUri)}"
     }
 
-    data object SinglePost :
-        DestinationScreen("singlepost/{postId}/{userId}/{userName}/{userImage}/{postImage}/{postDescription}/{postTime}") {
-        fun createRoute(postData: PostData) =
-            "singlepost/" + "${Uri.encode(postData.postId)}/" + "${Uri.encode(postData.userId)}/" + "${
-                Uri.encode(postData.userName)
-            }/" + "${Uri.encode(postData.userImage)}/" + "${Uri.encode(postData.postImage)}/" + "${
-                Uri.encode(
-                    postData.postDescription
-                )
-            }/" + "${postData.postTime}"
+    data object SinglePost : DestinationScreen("singlepost/{postData}") {
+        fun createRoute(postData: PostData): String {
+            return "singlepost/${Uri.encode(Gson().toJson(postData))}"
+        }
     }
 }

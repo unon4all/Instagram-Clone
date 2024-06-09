@@ -7,6 +7,7 @@ import com.example.instaclone.data.PostData
 import com.example.instaclone.data.UiState
 import com.example.instaclone.data.UserData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
@@ -197,8 +198,34 @@ class IgViewModel @Inject constructor(
     fun uploadProfileImage(uri: Uri) {
         uploadImage(uri) {
             createOrUpdateUserProfile(profileImage = it.toString())
+            updatePostUserImage(it.toString())
         }
     }
+
+    private fun updatePostUserImage(imgUrl: String) {
+        val uid = auth.currentUser?.uid
+        db.collection("posts").whereEqualTo("userId", uid).get().addOnSuccessListener {
+            val posts = MutableStateFlow<List<PostData>>(arrayListOf())
+            convertPosts(it, posts)
+            val refs = arrayOf<DocumentReference>()
+            for (post in posts.value) {
+                post.postId?.let { id ->
+                    refs.plus(db.collection("posts").document(id))
+                }
+            }
+
+            if (refs.isNotEmpty()) {
+                db.runBatch { batch ->
+                    for (ref in refs) {
+                        batch.update(ref, "userImage", imgUrl)
+                    }
+                }.addOnSuccessListener {
+                    refreshPosts()
+                }
+            }
+        }
+    }
+
 
     fun onNewPost(uri: Uri, description: String, onPostSuccess: () -> Unit) {
         uploadImage(uri) {
@@ -218,7 +245,9 @@ class IgViewModel @Inject constructor(
                 userImage = userData.value?.imgUrl,
                 postImage = it.toString(),
                 postDescription = description,
-                postTime = System.currentTimeMillis()
+                postTime = System.currentTimeMillis(),
+                postLikes = listOf<String>(),
+                postComments = listOf<String>()
             )
             db.collection("posts").document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
