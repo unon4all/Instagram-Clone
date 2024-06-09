@@ -2,11 +2,10 @@
 agp = "8.4.1"
 coilCompose = "2.6.0"
 firebaseAuth = "23.0.0"
-firebaseBom = "33.0.0"
+firebaseBom = "33.1.0"
 hiltAndroid = "2.51.1"
 hiltCompiler = "1.2.0"
 hiltCompilerVersion = "1.2.0"
-#hiltLifecycleViewmodel = "1.0.0-alpha03"
 kotlin = "1.9.10"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -14,19 +13,21 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxCoroutinesCore = "1.7.3"
+kotlinxParcelize = "1.2.1"
+kotlinxSerializationJson = "1.6.3"
 lifecycleExtensions = "2.2.0"
-lifecycleRuntimeKtx = "2.8.0"
+lifecycleRuntimeKtx = "2.8.1"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
-lifecycleViewmodelKtx = "2.8.0"
+lifecycleViewmodelKtx = "2.8.1"
 navigationFragmentKtx = "2.7.7"
 safeargs = "2.7.7"
 daggerHilt = "2.48"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 playServicesMaps = "18.2.0"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 workRuntimeKtx = "2.9.0"
-googleGmsGoogleServices = "4.4.1"
+googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.0.0"
 firebaseStorage = "21.0.0"
 
@@ -64,6 +65,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-parcelize = { module = "org.jetbrains.kotlinx:kotlinx-parcelize", version.ref = "kotlinxParcelize" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }

@@ -9,7 +9,6 @@ data class UserData(
     val followers: Int? = null,
     val following: List<String>? = listOf(),
 ) {
-
     fun toMap() = mapOf(
         "userId" to userId,
         "name" to name,
@@ -17,5 +16,4 @@ data class UserData(
         "imgUrl" to imgUrl,
         "bio" to bio,
     )
-
 }

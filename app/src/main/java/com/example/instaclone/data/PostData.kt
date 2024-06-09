@@ -1,5 +1,9 @@
 package com.example.instaclone.data
 
+import kotlinx.serialization.Serializable
+
+
+@Serializable
 data class PostData(
     val postId: String? = null,
     val userId: String? = null,
