@@ -118,7 +118,6 @@ class IgViewModel @Inject constructor(
 
 
         uid?.let { userId ->
-//            _uiState.value = UiState.Loading
             db.collection("users").document(userId).get().addOnSuccessListener {
                 if (it.exists()) {
                     it.reference.update(userData.toMap()).addOnSuccessListener {
@@ -246,8 +245,8 @@ class IgViewModel @Inject constructor(
                 postImage = it.toString(),
                 postDescription = description,
                 postTime = System.currentTimeMillis(),
-                postLikes = listOf<String>(),
-                postComments = listOf<String>()
+                postLikes = listOf(),
+                postComments = listOf()
             )
             db.collection("posts").document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
