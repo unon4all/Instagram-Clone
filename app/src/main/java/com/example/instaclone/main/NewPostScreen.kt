@@ -54,7 +54,8 @@ fun NewPostScreen(
                 .fillMaxWidth()
                 .padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            ClickableText(text = AnnotatedString(text = "Cancel"),
+            ClickableText(
+                text = AnnotatedString(text = "Cancel"),
                 onClick = { navController.popBackStack() })
             ClickableText(text = AnnotatedString("Post")) {
                 focusManager.clearFocus()

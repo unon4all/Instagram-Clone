@@ -118,7 +118,7 @@ sealed class DestinationScreen(val route: String) {
 
     data object Profile : DestinationScreen("profile")
     data object NewPost : DestinationScreen("newpost/{imageUri}") {
-        fun createRoute(imageUri: String) = "newpost/${Uri.encode(imageUri)}"
+        fun createRoute(imageUri: String) = "newpost/$imageUri"
     }
 
     data object SinglePost : DestinationScreen("singlepost/{postData}") {

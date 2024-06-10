@@ -41,6 +41,9 @@ class IgViewModel @Inject constructor(
     private val _posts = MutableStateFlow<List<PostData>>(emptyList())
     val posts: StateFlow<List<PostData>> get() = _posts.asStateFlow()
 
+    private val _searchPosts = MutableStateFlow<List<PostData>>(emptyList())
+    val searchPosts: StateFlow<List<PostData>> get() = _searchPosts.asStateFlow()
+
     init {
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
@@ -235,6 +238,32 @@ class IgViewModel @Inject constructor(
     private fun onCreatePost(it: Uri, description: String, onPostSuccess: () -> Unit) {
         val uid = auth.currentUser?.uid
 
+        val fillerWords = listOf(
+            "the",
+            "be",
+            "to",
+            "of",
+            "and",
+            "a",
+            "in",
+        )
+        val searchTerms = description.split(
+            " ",
+            ".",
+            "?",
+            "!",
+            "/",
+            ",",
+            "'",
+            ":",
+            "-",
+            "#",
+            "@",
+            "_",
+            "&",
+            "*",
+        ).map { it.lowercase() }.filter { it.isNotEmpty() && !fillerWords.contains(it.lowercase()) }
+
         if (uid != null) {
             val postId = UUID.randomUUID().toString()
             val post = PostData(
@@ -246,7 +275,8 @@ class IgViewModel @Inject constructor(
                 postDescription = description,
                 postTime = System.currentTimeMillis(),
                 postLikes = listOf(),
-                postComments = listOf()
+                postComments = listOf(),
+                searchTerms = searchTerms
             )
             db.collection("posts").document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
@@ -291,5 +321,19 @@ class IgViewModel @Inject constructor(
 
         val sortedPost = newPosts.sortedByDescending { it.postTime }
         outState.value = sortedPost
+    }
+
+
+    fun searchPosts(searchTerm: String) {
+        if (searchTerm.isNotEmpty()) {
+            _uiState.value = UiState.Loading
+            db.collection("posts").whereArrayContains("searchTerms", searchTerm.trim().lowercase())
+                .get().addOnFailureListener {
+                    handleException(it, "Error searching posts")
+                }.addOnSuccessListener { querySnapshot ->
+                    convertPosts(querySnapshot, _searchPosts)
+                    _uiState.value = UiState.Success("Posts fetched successfully")
+                }
+        }
     }
 }

@@ -49,15 +49,15 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
 
     val postData by vm.posts.collectAsState()
 
-    val newPostImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            uri?.let {
-                val encoded = Uri.encode(it.toString())
-                val route = DestinationScreen.NewPost.createRoute(encoded)
-                navController.navigate(route)
-            }
-        })
+    val newPostImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
+            onResult = { uri ->
+                uri?.let {
+                    val encoded = Uri.encode(it.toString())
+                    val route = DestinationScreen.NewPost.createRoute(encoded)
+                    navController.navigate(route)
+                }
+            })
 
     val userData by vm.userData.collectAsState()
 
@@ -65,8 +65,7 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
         Row(
             modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            ProfileImage(
-                imgUrl = userData?.imgUrl,
+            ProfileImage(imgUrl = userData?.imgUrl,
                 onClick = { newPostImageLauncher.launch("image/*") })
             Text(
                 text = "15\nPosts",
@@ -147,7 +146,9 @@ fun PostList(
 ) {
     if (postList.isEmpty()) {
         Column(
-            modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "No posts available")
         }
