@@ -146,7 +146,7 @@ fun PostList(
 ) {
     if (postList.isEmpty()) {
         Column(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

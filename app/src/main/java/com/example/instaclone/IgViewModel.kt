@@ -170,6 +170,10 @@ class IgViewModel @Inject constructor(
 
     fun logout() {
         auth.signOut()
+        _userData.value = null
+        _uiState.value = UiState.Success("Logged out successfully")
+        _posts.value = emptyList()
+        _searchPosts.value = emptyList()
     }
 
     fun updateUserData(name: String?, username: String?, bio: String?) {
@@ -276,7 +280,8 @@ class IgViewModel @Inject constructor(
                 postTime = System.currentTimeMillis(),
                 postLikes = listOf(),
                 postComments = listOf(),
-                searchTerms = searchTerms
+                searchTerms = searchTerms,
+                following = listOf()
             )
             db.collection("posts").document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
@@ -333,6 +338,25 @@ class IgViewModel @Inject constructor(
                 }.addOnSuccessListener { querySnapshot ->
                     convertPosts(querySnapshot, _searchPosts)
                     _uiState.value = UiState.Success("Posts fetched successfully")
+                }
+        }
+    }
+
+    fun onFollowClick(userId: String) {
+        auth.currentUser?.uid?.let { currentUser ->
+            val following = arrayListOf<String>()
+            _userData.value?.following?.let {
+                following.addAll(it)
+            }
+            if (following.contains(userId)) {
+                following.remove(userId)
+            } else {
+                following.add(userId)
+            }
+            db.collection("users").document(currentUser).update("following", following)
+                .addOnSuccessListener {
+                    getUserData(currentUser)
+                    _uiState.value = UiState.Success("User followed successfully")
                 }
         }
     }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -29,14 +28,13 @@ import androidx.navigation.NavController
 import com.example.instaclone.IgViewModel
 import com.google.gson.Gson
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(modifier: Modifier = Modifier, navController: NavController, vm: IgViewModel) {
 
     val searchedPosts by vm.searchPosts.collectAsState()
     var searchTerm by rememberSaveable { mutableStateOf("") }
 
-    Column {
+    Column(modifier = modifier) {
         SearchBar(
             searchTerm = searchTerm,
             onSearch = { vm.searchPosts(searchTerm) },

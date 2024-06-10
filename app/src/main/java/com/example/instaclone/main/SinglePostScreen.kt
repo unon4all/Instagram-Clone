@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -81,8 +82,18 @@ fun SinglePostDisplay(navController: NavController, vm: IgViewModel, postData: P
 
             if (userData?.userId == postData.userId) {
                 // Current User Post don't show anything
+            } else if (userData?.following?.contains(postData.userId) == true) {
+                TextButton(
+                    onClick = { vm.onFollowClick(postData.userId ?: "") },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Gray)
+                ) {
+                    Text(text = "Following")
+                }
             } else {
-                TextButton(onClick = {}) {
+                TextButton(
+                    onClick = { vm.onFollowClick(postData.userId ?: "") },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Blue)
+                ) {
                     Text(text = "Follow")
                 }
             }
