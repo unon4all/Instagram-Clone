@@ -13,7 +13,7 @@ data class PostData(
     val postImage: String? = null,
     val postDescription: String? = null,
     val postTime: Long? = null,
-    val postLikes: List<String>? = null,
+    var postLikes: List<String>? = null,
     val postComments: List<String>? = null,
     val searchTerms: List<String>? = null,
     val following: List<String>? = null,

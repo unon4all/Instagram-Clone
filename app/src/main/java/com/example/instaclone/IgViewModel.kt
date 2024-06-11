@@ -1,7 +1,9 @@
 package com.example.instaclone
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.instaclone.data.CommentData
 import com.example.instaclone.data.Event
 import com.example.instaclone.data.PostData
 import com.example.instaclone.data.UiState
@@ -18,6 +20,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 import javax.inject.Inject
 
+const val USERS = "users"
+const val POSTS = "posts"
+const val COMMENTS = "comments"
 
 @HiltViewModel
 class IgViewModel @Inject constructor(
@@ -44,6 +49,12 @@ class IgViewModel @Inject constructor(
     private val _searchPosts = MutableStateFlow<List<PostData>>(emptyList())
     val searchPosts: StateFlow<List<PostData>> get() = _searchPosts.asStateFlow()
 
+    private val _postFeed = MutableStateFlow<List<PostData>>(emptyList())
+    val postFeed: StateFlow<List<PostData>> get() = _postFeed.asStateFlow()
+
+    private val _commentsData = MutableStateFlow<List<CommentData?>>(emptyList())
+    val commentsData: StateFlow<List<CommentData?>> get() = _commentsData.asStateFlow()
+
     init {
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
@@ -59,7 +70,7 @@ class IgViewModel @Inject constructor(
 
         _uiState.value = UiState.Loading
 
-        db.collection("users").whereEqualTo("username", username).get()
+        db.collection(USERS).whereEqualTo("username", username).get()
             .addOnSuccessListener { querySnapshot ->
                 if (querySnapshot.documents.isNotEmpty()) {
                     handleException(customMessage = "Username already exists")
@@ -121,7 +132,7 @@ class IgViewModel @Inject constructor(
 
 
         uid?.let { userId ->
-            db.collection("users").document(userId).get().addOnSuccessListener {
+            db.collection(USERS).document(userId).get().addOnSuccessListener {
                 if (it.exists()) {
                     it.reference.update(userData.toMap()).addOnSuccessListener {
                         this._userData.value = userData
@@ -130,7 +141,7 @@ class IgViewModel @Inject constructor(
                         handleException(exception)
                     }
                 } else {
-                    db.collection("users").document(userId).set(userData).addOnSuccessListener {
+                    db.collection(USERS).document(userId).set(userData).addOnSuccessListener {
                         this._userData.value = userData
                         _uiState.value = UiState.Success("Profile created successfully")
                     }.addOnFailureListener { exception ->
@@ -146,11 +157,12 @@ class IgViewModel @Inject constructor(
 
     private fun getUserData(uid: String) {
         _uiState.value = UiState.Loading
-        db.collection("users").document(uid).get().addOnSuccessListener {
+        db.collection(USERS).document(uid).get().addOnSuccessListener {
             val userData = it.toObject(UserData::class.java)
             this._userData.value = userData
             _uiState.value = UiState.Success("User data fetched successfully")
             refreshPosts()
+            getPersonalizedFeed()
         }.addOnFailureListener {
             handleException(it)
         }
@@ -174,6 +186,8 @@ class IgViewModel @Inject constructor(
         _uiState.value = UiState.Success("Logged out successfully")
         _posts.value = emptyList()
         _searchPosts.value = emptyList()
+        _postFeed.value = emptyList()
+        _commentsData.value = emptyList()
     }
 
     fun updateUserData(name: String?, username: String?, bio: String?) {
@@ -210,13 +224,13 @@ class IgViewModel @Inject constructor(
 
     private fun updatePostUserImage(imgUrl: String) {
         val uid = auth.currentUser?.uid
-        db.collection("posts").whereEqualTo("userId", uid).get().addOnSuccessListener {
+        db.collection(POSTS).whereEqualTo("userId", uid).get().addOnSuccessListener {
             val posts = MutableStateFlow<List<PostData>>(arrayListOf())
             convertPosts(it, posts)
             val refs = arrayOf<DocumentReference>()
             for (post in posts.value) {
                 post.postId?.let { id ->
-                    refs.plus(db.collection("posts").document(id))
+                    refs.plus(db.collection(POSTS).document(id))
                 }
             }
 
@@ -231,7 +245,6 @@ class IgViewModel @Inject constructor(
             }
         }
     }
-
 
     fun onNewPost(uri: Uri, description: String, onPostSuccess: () -> Unit) {
         uploadImage(uri) {
@@ -283,7 +296,7 @@ class IgViewModel @Inject constructor(
                 searchTerms = searchTerms,
                 following = listOf()
             )
-            db.collection("posts").document(postId).set(post).addOnSuccessListener {
+            db.collection(POSTS).document(postId).set(post).addOnSuccessListener {
                 _uiState.value = UiState.Success("Post created successfully")
                 onPostSuccess()
                 refreshPosts()
@@ -301,7 +314,7 @@ class IgViewModel @Inject constructor(
 
         if (currentUserId != null) {
             _refreshPostsProgress.value = true
-            db.collection("posts").whereEqualTo("userId", currentUserId).get()
+            db.collection(POSTS).whereEqualTo("userId", currentUserId).get()
                 .addOnCompleteListener { documents ->
                     convertPosts(
                         documents.result, _posts
@@ -328,11 +341,10 @@ class IgViewModel @Inject constructor(
         outState.value = sortedPost
     }
 
-
     fun searchPosts(searchTerm: String) {
         if (searchTerm.isNotEmpty()) {
             _uiState.value = UiState.Loading
-            db.collection("posts").whereArrayContains("searchTerms", searchTerm.trim().lowercase())
+            db.collection(POSTS).whereArrayContains("searchTerms", searchTerm.trim().lowercase())
                 .get().addOnFailureListener {
                     handleException(it, "Error searching posts")
                 }.addOnSuccessListener { querySnapshot ->
@@ -353,10 +365,94 @@ class IgViewModel @Inject constructor(
             } else {
                 following.add(userId)
             }
-            db.collection("users").document(currentUser).update("following", following)
+            db.collection(USERS).document(currentUser).update("following", following)
                 .addOnSuccessListener {
                     getUserData(currentUser)
                     _uiState.value = UiState.Success("User followed successfully")
+                }
+        }
+    }
+
+    private fun getPersonalizedFeed() {
+        val following = _userData.value?.following ?: emptyList()
+
+        if (following.isNotEmpty()) {
+            _uiState.value = UiState.Loading
+            db.collection(POSTS).whereIn("userId", following).get().addOnSuccessListener {
+                convertPosts(it, _postFeed)
+                if (_postFeed.value.isEmpty()) {
+                    getGeneralFeed()
+                } else {
+                    _uiState.value = UiState.Success("Posts fetched successfully")
+                }
+            }.addOnFailureListener {
+                handleException(it, "Error fetching posts")
+            }
+        } else {
+            getGeneralFeed()
+        }
+    }
+
+    private fun getGeneralFeed() {
+        _uiState.value = UiState.Loading
+
+        val currentTime = System.currentTimeMillis()
+        val lastDay = currentTime - (24 * 60 * 60 * 1000)
+
+        db.collection(POSTS).whereGreaterThan("postTime", lastDay).get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    Log.d("getGeneralFeed", "Post data: ${document.data}")
+                }
+                convertPosts(querySnapshot, _postFeed)
+                _uiState.value = UiState.Success("Posts fetched successfully")
+            }.addOnFailureListener {
+                handleException(it, "Error fetching posts")
+            }
+    }
+
+    fun onLikePost(postData: PostData) {
+        auth.currentUser?.uid?.let { userId ->
+            val newLikes = postData.postLikes?.toMutableList() ?: mutableListOf()
+
+            if (newLikes.contains(userId)) {
+                newLikes.remove(userId)
+            } else {
+                newLikes.add(userId)
+            }
+
+            postData.postId?.let { postId ->
+                db.collection(POSTS).document(postId).update("postLikes", newLikes)
+                    .addOnSuccessListener {
+                        postData.postLikes = newLikes
+                        // Optionally, you can trigger a UI update here if needed
+                    }.addOnFailureListener {
+                        handleException(it, "Error liking post")
+                    }
+            }
+        }
+    }
+
+    fun createComment(postId: String, comment: String) {
+        _userData.value?.userName?.let { userName ->
+            val commentId = UUID.randomUUID().toString()
+            val commentData = CommentData(
+                commentId = commentId,
+                userName = userName,
+                comment = comment,
+                commentTime = System.currentTimeMillis(),
+                postId = postId
+            )
+
+            db.collection(COMMENTS)
+                .document(commentId)
+                .set(commentData)
+                .addOnSuccessListener {
+                    // get existing comment
+
+                }
+                .addOnFailureListener {
+                    handleException(it, "Error creating comment")
                 }
         }
     }

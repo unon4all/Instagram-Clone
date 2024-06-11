@@ -80,7 +80,7 @@ fun BottomNavigationCompose(
                 .fillMaxSize()
         ) {
             when (selectedIndexDemo) {
-                0 -> FeedScreen()
+                0 -> FeedScreen(navController = navController, vm = vm)
                 1 -> SearchScreen(navController = navController, vm = vm)
                 else -> MyPostScreen(vm = vm, navController = navController)
             }
