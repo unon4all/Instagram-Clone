@@ -55,6 +55,9 @@ class IgViewModel @Inject constructor(
     private val _commentsData = MutableStateFlow<List<CommentData?>>(emptyList())
     val commentsData: StateFlow<List<CommentData?>> get() = _commentsData.asStateFlow()
 
+    private val _followers = MutableStateFlow(0)
+    val followers: StateFlow<Int> get() = _followers.asStateFlow()
+
     init {
         auth.currentUser?.uid?.let { uid ->
             getUserData(uid)
@@ -163,6 +166,7 @@ class IgViewModel @Inject constructor(
             _uiState.value = UiState.Success("User data fetched successfully")
             refreshPosts()
             getPersonalizedFeed()
+            getFollowers(uid)
         }.addOnFailureListener {
             handleException(it)
         }
@@ -444,16 +448,39 @@ class IgViewModel @Inject constructor(
                 postId = postId
             )
 
-            db.collection(COMMENTS)
-                .document(commentId)
-                .set(commentData)
-                .addOnSuccessListener {
-                    // get existing comment
-
-                }
-                .addOnFailureListener {
-                    handleException(it, "Error creating comment")
-                }
+            db.collection(COMMENTS).document(commentId).set(commentData).addOnSuccessListener {
+                // get existing comment
+                getComments(postId)
+                _uiState.value = UiState.Success("Comment created successfully")
+            }.addOnFailureListener {
+                handleException(it, "Error creating comment")
+            }
         }
+    }
+
+    fun getComments(postId: String) {
+        _uiState.value = UiState.Loading
+        db.collection(COMMENTS).whereEqualTo("postId", postId).get()
+            .addOnSuccessListener { querySnapshot ->
+                val comments = mutableListOf<CommentData?>()
+                for (document in querySnapshot.documents) {
+                    val comment = document.toObject(CommentData::class.java)
+                    comments.add(comment)
+                }
+                val sortedComments = comments.sortedByDescending { it?.commentTime }
+                _commentsData.value = sortedComments
+                _uiState.value = UiState.Success("Comments fetched successfully")
+            }.addOnFailureListener {
+                handleException(it, "Error fetching comments")
+            }
+    }
+
+    private fun getFollowers(userId: String) {
+        db.collection(USERS).whereArrayContains("following", userId ?: "").get()
+            .addOnSuccessListener {
+                _followers.value = it.size()
+            }.addOnFailureListener {
+                handleException(it, "Error fetching followers")
+            }
     }
 }

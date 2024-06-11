@@ -22,6 +22,7 @@ import com.example.instaclone.auth.ProfileScreen
 import com.example.instaclone.auth.SignUpScreen
 import com.example.instaclone.data.PostData
 import com.example.instaclone.main.BottomNavigationCompose
+import com.example.instaclone.main.CommentScreen
 import com.example.instaclone.main.NewPostScreen
 import com.example.instaclone.main.NotificationMessage
 import com.example.instaclone.main.SinglePostScreen
@@ -92,6 +93,18 @@ fun InstaCloneApp(paddingValues: PaddingValues) {
             }
         }
 
+        composable(DestinationScreen.CommentScreen.route) { navBackStackEntry ->
+            val postId = navBackStackEntry.arguments?.getString("postId")
+            postId?.let {
+                CommentScreen(
+                    postId = it,
+                    vm = vm,
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+        }
+
         composable(
             route = DestinationScreen.SinglePost.route,
             arguments = listOf(navArgument("postData") { type = NavType.StringType })
@@ -125,5 +138,9 @@ sealed class DestinationScreen(val route: String) {
         fun createRoute(postData: PostData): String {
             return "singlepost/${Uri.encode(Gson().toJson(postData))}"
         }
+    }
+
+    data object CommentScreen : DestinationScreen("comments/{postId}") {
+        fun createRoute(postId: String) = "comments/$postId"
     }
 }

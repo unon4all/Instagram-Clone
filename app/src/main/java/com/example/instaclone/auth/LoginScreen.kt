@@ -119,7 +119,8 @@ fun SignInContent(
             }
 
             ClickableText(text = AnnotatedString(
-                text = "New here? Go to Signup ->", spanStyle = SpanStyle(color = Color.White)
+                text = "New here? Go to Signup ->",
+                spanStyle = SpanStyle(color = Color.LightGray)
             ), modifier = Modifier.padding(8.dp), onClick = {
                 navigateTo(navController, DestinationScreen.Signup)
             })

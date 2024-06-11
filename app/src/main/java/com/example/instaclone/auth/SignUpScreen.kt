@@ -142,7 +142,7 @@ fun SignUpContent(
 
             ClickableText(text = AnnotatedString(
                 text = "Already have an account? Sign in",
-                spanStyle = SpanStyle(color = Color.White)
+                spanStyle = SpanStyle(color = Color.LightGray)
             ),
                 modifier = Modifier.padding(8.dp),
                 onClick = { navigateTo(navController, DestinationScreen.Login) })

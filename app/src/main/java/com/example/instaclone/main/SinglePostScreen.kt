@@ -1,5 +1,6 @@
 package com.example.instaclone.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,6 +40,14 @@ fun SinglePostScreen(
     vm: IgViewModel,
     postData: PostData,
 ) {
+
+
+    val comments by vm.commentsData.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        vm.getComments(postData.postId ?: "")
+    }
+
     postData.userId?.let {
         Column(
             modifier = modifier
@@ -51,14 +61,21 @@ fun SinglePostScreen(
 
             CommonDivider()
 
-            SinglePostDisplay(navController = navController, vm = vm, postData = postData)
+            SinglePostDisplay(
+                navController = navController,
+                vm = vm,
+                postData = postData,
+                nbComments = comments.size
+            )
         }
     }
 }
 
 
 @Composable
-fun SinglePostDisplay(navController: NavController, vm: IgViewModel, postData: PostData) {
+fun SinglePostDisplay(
+    navController: NavController, vm: IgViewModel, postData: PostData, nbComments: Int
+) {
 
     val userData by vm.userData.collectAsState()
 
@@ -129,10 +146,12 @@ fun SinglePostDisplay(navController: NavController, vm: IgViewModel, postData: P
         Text(text = postData.postDescription ?: "", modifier = Modifier.padding(start = 8.dp))
     }
 
-    Row(modifier = Modifier.padding(8.dp)) {
-        Text(
-            text = "View all ${postData.postComments?.size ?: 0} comments", color = Color.Gray
-        )
+    Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+        Text(text = "$nbComments comments", color = Color.Gray, modifier = Modifier.clickable {
+            postData.postId?.let {
+                navController.navigate("comments/${it}")
+            }
+        })
     }
 }
 

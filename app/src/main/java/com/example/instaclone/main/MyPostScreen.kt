@@ -1,7 +1,6 @@
 package com.example.instaclone.main
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -48,16 +47,17 @@ import com.google.gson.Gson
 fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: NavController) {
 
     val postData by vm.posts.collectAsState()
+    val followers by vm.followers.collectAsState()
 
-    val newPostImageLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
-            onResult = { uri ->
-                uri?.let {
-                    val encoded = Uri.encode(it.toString())
-                    val route = DestinationScreen.NewPost.createRoute(encoded)
-                    navController.navigate(route)
-                }
-            })
+    val newPostImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                val encoded = Uri.encode(it.toString())
+                val route = DestinationScreen.NewPost.createRoute(encoded)
+                navController.navigate(route)
+            }
+        })
 
     val userData by vm.userData.collectAsState()
 
@@ -65,24 +65,25 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
         Row(
             modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            ProfileImage(imgUrl = userData?.imgUrl,
+            ProfileImage(
+                imgUrl = userData?.imgUrl,
                 onClick = { newPostImageLauncher.launch("image/*") })
             Text(
-                text = "15\nPosts",
+                text = "${postData.size}\nPosts",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterVertically)
             )
             Text(
-                text = "15\nFollowers",
+                text = "$followers\nFollowers",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterVertically)
             )
             Text(
-                text = "15\nFollowing",
+                text = "${userData?.following?.size ?: 0}\nFollowing",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .weight(1f)
@@ -133,9 +134,6 @@ fun MyPostScreen(modifier: Modifier = Modifier, vm: IgViewModel, navController: 
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxSize()
         )
-
-
-        Log.d("MyPostScreen", "postData: $postData")
     }
 }
 
