@@ -1,6 +1,7 @@
 package com.example.instaclone
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.instaclone.data.Event
 import com.example.instaclone.data.PostData
@@ -43,6 +44,10 @@ class IgViewModel @Inject constructor(
 
     private val _searchPosts = MutableStateFlow<List<PostData>>(emptyList())
     val searchPosts: StateFlow<List<PostData>> get() = _searchPosts.asStateFlow()
+
+    private val _postFeed = MutableStateFlow<List<PostData>>(emptyList())
+    val postFeed: StateFlow<List<PostData>> get() = _postFeed.asStateFlow()
+
 
     init {
         auth.currentUser?.uid?.let { uid ->
@@ -151,6 +156,7 @@ class IgViewModel @Inject constructor(
             this._userData.value = userData
             _uiState.value = UiState.Success("User data fetched successfully")
             refreshPosts()
+            getPersonalizedFeed()
         }.addOnFailureListener {
             handleException(it)
         }
@@ -174,6 +180,7 @@ class IgViewModel @Inject constructor(
         _uiState.value = UiState.Success("Logged out successfully")
         _posts.value = emptyList()
         _searchPosts.value = emptyList()
+        _postFeed.value = emptyList()
     }
 
     fun updateUserData(name: String?, username: String?, bio: String?) {
@@ -359,5 +366,50 @@ class IgViewModel @Inject constructor(
                     _uiState.value = UiState.Success("User followed successfully")
                 }
         }
+    }
+
+    private fun getPersonalizedFeed() {
+        val following = _userData.value?.following ?: emptyList()
+
+        if (following.isNotEmpty()) {
+            _uiState.value = UiState.Loading
+            db.collection("posts")
+                .whereIn("userId", following)
+                .get()
+                .addOnSuccessListener {
+                    convertPosts(it, _postFeed)
+                    if (_postFeed.value.isEmpty()) {
+                        getGeneralFeed()
+                    } else {
+                        _uiState.value = UiState.Success("Posts fetched successfully")
+                    }
+                }.addOnFailureListener {
+                    handleException(it, "Error fetching posts")
+                }
+        } else {
+            getGeneralFeed()
+        }
+    }
+
+
+    private fun getGeneralFeed() {
+        _uiState.value = UiState.Loading
+
+        val currentTime = System.currentTimeMillis()
+        val lastDay = currentTime - (24 * 60 * 60 * 1000)
+
+        db.collection("posts")
+            .whereGreaterThan("postTime", lastDay)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    Log.d("getGeneralFeed", "Post data: ${document.data}")
+                }
+                convertPosts(querySnapshot, _postFeed)
+                _uiState.value = UiState.Success("Posts fetched successfully")
+            }
+            .addOnFailureListener {
+                handleException(it, "Error fetching posts")
+            }
     }
 }

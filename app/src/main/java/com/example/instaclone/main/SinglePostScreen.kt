@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.example.instaclone.IgViewModel
 import com.example.instaclone.R
 import com.example.instaclone.data.PostData
+import com.example.instaclone.data.UserData
 
 @Composable
 fun SinglePostScreen(
@@ -67,15 +68,7 @@ fun SinglePostDisplay(navController: NavController, vm: IgViewModel, postData: P
             .height(48.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Card(
-                shape = CircleShape, modifier = Modifier
-                    .padding(8.dp)
-                    .size(32.dp)
-            ) {
-                userData?.imgUrl?.let {
-                    CommonImage(url = it)
-                }
-            }
+            UserImageCard(userData)
 
             Text(text = postData.userName ?: "")
             Text(text = ".", modifier = Modifier.padding(8.dp))
@@ -140,5 +133,18 @@ fun SinglePostDisplay(navController: NavController, vm: IgViewModel, postData: P
         Text(
             text = "View all ${postData.postComments?.size ?: 0} comments", color = Color.Gray
         )
+    }
+}
+
+@Composable
+fun UserImageCard(userData: UserData?) {
+    Card(
+        shape = CircleShape, modifier = Modifier
+            .padding(8.dp)
+            .size(32.dp)
+    ) {
+        userData?.imgUrl?.let {
+            CommonImage(url = it)
+        }
     }
 }
