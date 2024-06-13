@@ -74,7 +74,11 @@ fun SignInContent(
 
     val focusManager = LocalFocusManager.current
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

@@ -56,68 +56,68 @@ android {
     }
 }
 
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
-}
+    // Allow references to generated code
+    kapt {
+        correctErrorTypes = true
+    }
 
-dependencies {
+    dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.lifecycle.runtime.ktx)
+        implementation(libs.androidx.activity.compose)
+        implementation(platform(libs.androidx.compose.bom))
+        implementation(libs.androidx.ui)
+        implementation(libs.androidx.ui.graphics)
+        implementation(libs.androidx.ui.tooling.preview)
+        implementation(libs.androidx.material3)
 
-    implementation(libs.hilt.android)
-    implementation(libs.play.services.maps)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.storage)
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
-    implementation(libs.androidx.work.runtime.ktx)
+        implementation(libs.hilt.android)
+        implementation(libs.play.services.maps)
+        implementation(libs.androidx.appcompat)
+        implementation(libs.firebase.firestore)
+        implementation(libs.firebase.storage)
+        kapt(libs.hilt.compiler)
+        kapt(libs.androidx.hilt.compiler)
+        implementation(libs.androidx.work.runtime.ktx)
 
-    // Hilt ViewModel
-//    implementation(libs.androidx.hilt.lifecycle.viewmodel)
-    kapt(libs.androidx.hilt.compiler.v100beta01)
+        // Hilt ViewModel
+    //    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+        kapt(libs.androidx.hilt.compiler.v100beta01)
 
-    // ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.extensions)
+        // ViewModel
+        implementation(libs.androidx.lifecycle.viewmodel.ktx)
+        implementation(libs.androidx.lifecycle.extensions)
 
-    implementation(libs.androidx.hilt.navigation.compose)
+        implementation(libs.androidx.hilt.navigation.compose)
 
 
-    //Navigation Component
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+        //Navigation Component
+        implementation(libs.androidx.navigation.fragment.ktx)
+        implementation(libs.androidx.navigation.ui.ktx)
 
-    // Coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+        // Coroutines
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.kotlinx.coroutines.android)
 
-    implementation(libs.firebase.auth)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.storage.ktx)
-//    implementation(libs.kotlinx.parcelize)
+        implementation(libs.firebase.auth)
+        implementation(platform(libs.firebase.bom))
+        implementation(libs.firebase.auth.ktx)
+        implementation(libs.firebase.firestore.ktx)
+        implementation(libs.firebase.storage.ktx)
+    //    implementation(libs.kotlinx.parcelize)
 
-    implementation(libs.kotlinx.serialization.json)
+        implementation(libs.kotlinx.serialization.json)
 
-    implementation( libs.gson)
+        implementation( libs.gson)
 
-    implementation(libs.coil.compose)
+        implementation(libs.coil.compose)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-}
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.espresso.core)
+        androidTestImplementation(platform(libs.androidx.compose.bom))
+        androidTestImplementation(libs.androidx.ui.test.junit4)
+        debugImplementation(libs.androidx.ui.tooling)
+        debugImplementation(libs.androidx.ui.test.manifest)
+    }
